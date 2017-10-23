@@ -34,7 +34,7 @@ def neural_network():
     np.random.seed(1337)  # for reproducibility
 
     batch_size = 100
-    nb_epoch = 500
+    nb_epoch = 100
 
     x, y = train_data()
     test_data = test_data1('data/CH2014BST.txt')
@@ -250,3 +250,34 @@ def test_data1(file_path):
 
 if __name__ == '__main__':
     neural_network()
+
+
+
+
+
+def feature_selection():
+    x, y = train_data()
+
+    ss = preprocessing.StandardScaler()
+    x = ss.fit_transform(x)
+    cls = ExtraTreesRegressor()
+
+    cls = cls.fit(x, y)
+    print(cls.feature_importances_)
+
+
+# 距离 loss ，不工作
+def haversine2(truth, predict):  # 经度1，纬度1，经度2，纬度2 （十进制度数）
+    """ 
+    Calculate the great circle distance between two points  
+    on the earth (specified in decimal degrees) 
+    """
+    # 将十进制度数转化为弧度
+    predict = np.radians(predict)
+    truth = np.radians(truth)
+
+    dlon = predict[:, 1:] - truth[:, 1:]
+    dlat = predict[:, :1] - truth[:, :1]
+    a = np.sin(dlat / 2) ** 2 + np.cos(truth[:, :1]) * np.cos(predict[:, :1]) * np.sin(dlon / 2) ** 2
+    return list(map(lambda x: 2 * 6371 * asin(sqrt(x)), a))
+    # return abs(truth - predict)[:, :1] + abs(truth - predict)[:, 1:]
